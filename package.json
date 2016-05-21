@@ -1,0 +1,39 @@
+{
+  "name": "rheactor-build-views",
+  "description": "An utility to build HTML views",
+  "main": "index.js",
+  "scripts": {
+    "lint": "./node_modules/.bin/standard *.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "bin": {
+    "rheactor-build-views": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RHeactor/build-views.git"
+  },
+  "author": "Resourceful Humans <info@resourceful-humans.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RHeactor/build-views/issues"
+  },
+  "homepage": "https://github.com/RHeactor/build-views#readme",
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "commander": "^2.9.0",
+    "glob": "^7.0.3",
+    "lodash": "^4.12.0"
+  },
+  "devDependencies": {
+    "ghooks": "^1.2.1",
+    "standard": "^7.1.0",
+    "validate-commit-msg": "^2.6.1"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint",
+      "commit-msg": "validate-commit-msg"
+    }
+  }
+}
