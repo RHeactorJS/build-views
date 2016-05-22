@@ -12,9 +12,10 @@ const _template = require('lodash/template')
 const program = require('commander')
 program
   .command('build <config> <source> <target>')
+  .option('-i, --include <directory>', 'load additional includes from this directory')
   .description('build the views in source and write to target')
   .action(
-    (config, source, target) => {
+    (config, source, target, options) => {
       let cfg = require(path.join(process.cwd(), config))
       let environment = cfg.get('environment')
       let templatedata = {
@@ -39,25 +40,37 @@ program
 
       // Build includes
       let globAsync = Promise.promisify(glob)
-      return Promise.join(globAsync(source + '/includes/*.html'), globAsync(source + '/js/directives/*.html'))
+      let scanForIncludes = [
+        globAsync(source + '/includes/*.html')
+      ]
+      if (options.include) {
+        scanForIncludes.push(globAsync(options.include + '/*.html'))
+      }
+
+      return Promise.join(Promise.all(scanForIncludes), globAsync(source + '/js/directives/*.html'))
         .spread((includeTemplates, directiveTemplates) => {
           return Promise.join(
-            Promise.map(includeTemplates, (file) => {
-              let fileEnv = file.match(/@([a-z]+)\.[^\.]+$/)
-              if (fileEnv) {
-                fileEnv = fileEnv[1]
-              }
-              return fs.readFileAsync(file, 'utf8').then((data) => {
-                let trg = file.replace(source + '/includes/', '')
-                trg = trg.replace(/\.html$/, '')
-                trg = trg.replace(/\//, '.')
-                trg = trg.replace(/@([a-z]+)$/, '')
-                if (fileEnv && fileEnv !== environment) {
-                  data = false
-                } else {
-                  data = _template(data)({data: templatedata})
-                  includes[trg] = data
+            Promise.map(includeTemplates, (includesFound) => {
+              return Promise.map(includesFound, (file) => {
+                let fileEnv = file.match(/@([a-z]+)\.[^\.]+$/)
+                if (fileEnv) {
+                  fileEnv = fileEnv[1]
                 }
+                return fs.readFileAsync(file, 'utf8').then((data) => {
+                  let trg = file.replace(source + '/includes/', '')
+                  if (options.include) {
+                    trg = trg.replace(options.include, '')
+                  }
+                  trg = trg.replace(/\.html$/, '')
+                  trg = trg.replace(/\//, '.')
+                  trg = trg.replace(/@([a-z]+)$/, '')
+                  if (fileEnv && fileEnv !== environment) {
+                    data = false
+                  } else {
+                    data = _template(data)({data: templatedata})
+                    includes[trg] = data
+                  }
+                })
               })
             }),
             Promise.map(directiveTemplates, (file) => {
