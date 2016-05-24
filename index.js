@@ -25,6 +25,7 @@ program
         name: cfg.get('app'),
         description: cfg.get('description'),
         apiIndex: cfg.get('api_host') + '/api',
+        mimeType: cfg.get('mime_type'),
         environment: environment
       }
 
