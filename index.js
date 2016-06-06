@@ -7,7 +7,9 @@ const glob = require('glob')
 const path = require('path')
 const fs = require('fs')
 const _map = require('lodash/map')
+const _forIn = require('lodash/forIn')
 const _template = require('lodash/template')
+const _merge = require('lodash/merge')
 
 const program = require('commander')
 program
@@ -39,6 +41,22 @@ program
         console.log('  ' + key + ': ' + value)
       })
 
+      /**
+       * This function can be called from a template to add additional static data
+       *
+       * @param {String} includeName
+       * @param {Object} scope to be merged onto the template data
+       */
+      let include = (includeName, scope) => {
+        scope = scope || {}
+        let included = buildTemplate(includes[includeName], {
+          data: _merge({}, scope, templatedata),
+          includes: includes,
+          include
+        })
+        return included
+      }
+
       // Build includes
       let globAsync = Promise.promisify(glob)
       let scanForIncludes = [
@@ -68,11 +86,15 @@ program
                   if (fileEnv && fileEnv !== environment) {
                     data = false
                   } else {
-                    data = _template(data)({data: templatedata})
                     includes[trg] = data
                   }
                 })
               })
+                .then(() => {
+                  _forIn(includes, (template, trg) => {
+                    includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include})
+                  })
+                })
             }),
             Promise.map(directiveTemplates, (file) => {
               return fs.readFileAsync(file, 'utf8').then((data) => {
@@ -99,10 +121,32 @@ program
         .then(() => {
           process.exit(0)
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error(err)
           process.exit(1)
         })
     }
   )
+
+/**
+ * Recursively build the template, this allows for includes to contain includes …
+ *
+ * @param template
+ * @param data
+ * @param step
+ */
+let buildTemplate = (template, data, step) => {
+  step = step || 1
+  if (step >= 10) {
+    console.error('Reached maximum nesting level', step)
+    return template
+  }
+  let previousResult = template
+  let result = _template(template)(data)
+  if (result === previousResult) {
+    return result
+  }
+  return buildTemplate(result, data, ++step)
+}
 
 program.parse(process.argv)
