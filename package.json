@@ -20,14 +20,14 @@
   },
   "homepage": "https://github.com/RHeactor/build-views#readme",
   "dependencies": {
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.1",
     "commander": "^2.9.0",
-    "glob": "^7.0.3",
+    "glob": "^7.0.5",
     "lodash": "^4.12.0"
   },
   "devDependencies": {
-    "ghooks": "^1.2.1",
-    "standard": "^7.1.0",
+    "ghooks": "^1.3.2",
+    "standard": "^7.1.2",
     "validate-commit-msg": "^2.6.1",
     "semantic-release": "^4.3.5"
   },
