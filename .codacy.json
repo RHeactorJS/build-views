@@ -63,7 +63,7 @@
     {
       "patternId": "ESLint_semi",
       "parameters": {
-        "unnamedParam": "never"
+        "unnamedParam": "\"never\""
       },
       "enabled": true
     },
