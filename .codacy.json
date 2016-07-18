@@ -225,6 +225,10 @@
     {
       "patternId": "ESLint_no-class-assign",
       "enabled": true
+    },
+    {
+      "patternId": "ESLint_no-console",
+      "enabled": false
     }
   ]
 }
