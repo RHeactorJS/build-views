@@ -33,6 +33,7 @@ program
       }
 
       let includes = {}
+      let svgFiles = {}
       let directives = {}
 
       console.log()
@@ -50,12 +51,11 @@ program
        */
       let include = (includeName, scope) => {
         scope = scope || {}
-        let included = buildTemplate(includes[includeName], {
+        return buildTemplate(includes[includeName], {
           data: _merge({}, scope, templatedata),
           includes: includes,
           include
         })
-        return included
       }
 
       // Build includes
@@ -67,9 +67,15 @@ program
         scanForIncludes.push(globAsync(options.include + '/*.html'))
       }
 
-      return Promise.join(Promise.all(scanForIncludes), globAsync(source + '/js/directives/*.html'))
-        .spread((includeTemplates, directiveTemplates) => {
-          return Promise.join(
+      return Promise.join(Promise.all(scanForIncludes), globAsync(source + '/js/directives/*.html'), globAsync(source + '/img/*.svg'))
+        .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
+          .map(svgFiles, (file) => {
+            return fs.readFileAsync(file, 'utf8').then(data => {
+              let trg = file.match(/([^\/]+)\.svg$/)[1]
+              svgFiles[trg] = data
+            })
+          })
+          .then(() => Promise.join(
             Promise.map(includeTemplates, (includesFound) => {
               return Promise.map(includesFound, (file) => {
                 let fileEnv = file.match(/@([a-z]+)\.[^\.]+$/)
@@ -93,7 +99,7 @@ program
               })
                 .then(() => {
                   _forIn(includes, (template, trg) => {
-                    includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include})
+                    includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include, svg: svgFiles})
                   })
                 })
             }),
@@ -106,13 +112,13 @@ program
                 directives[trg] = data
               })
             })
-          )
-        })
+          ))
+        )
         .then(() => {
           return globAsync(source + '/*.html')
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
-                data = _template(data)({data: templatedata, includes: includes, directives: directives})
+                data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgFiles})
                 let trg = target + '/' + src.replace(source + '/', '')
                 console.log(src + ' -> ' + trg)
                 return fs.writeFileAsync(trg, data)
