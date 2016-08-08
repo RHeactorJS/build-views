@@ -33,7 +33,7 @@ program
       }
 
       let includes = {}
-      let svgFiles = {}
+      let svgIncludes = {}
       let directives = {}
 
       console.log()
@@ -72,7 +72,7 @@ program
           .map(svgFiles, (file) => {
             return fs.readFileAsync(file, 'utf8').then(data => {
               let trg = file.match(/([^\/]+)\.svg$/)[1]
-              svgFiles[trg] = data
+              svgIncludes[trg] = data
             })
           })
           .then(() => Promise.join(
@@ -99,7 +99,7 @@ program
               })
                 .then(() => {
                   _forIn(includes, (template, trg) => {
-                    includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include, svg: svgFiles})
+                    includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include, svg: svgIncludes})
                   })
                 })
             }),
@@ -118,7 +118,7 @@ program
           return globAsync(source + '/*.html')
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
-                data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgFiles})
+                data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgIncludes})
                 let trg = target + '/' + src.replace(source + '/', '')
                 console.log(src + ' -> ' + trg)
                 return fs.writeFileAsync(trg, data)
