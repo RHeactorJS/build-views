@@ -84,9 +84,7 @@ program
                   trg = trg.replace(/\.html$/, '')
                   trg = trg.replace(/\//, '.')
                   trg = trg.replace(/@([a-z]+)$/, '')
-                  if (fileEnv && fileEnv !== environment) {
-                    data = false
-                  } else {
+                  if (!fileEnv || fileEnv === environment) {
                     includes[trg] = data
                   }
                 })
