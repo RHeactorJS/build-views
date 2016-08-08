@@ -11,11 +11,13 @@ const _forIn = require('lodash/forIn')
 const _template = require('lodash/template')
 const _merge = require('lodash/merge')
 const colors = require('colors')
+const minify = require('html-minifier').minify;
 
 const program = require('commander')
 program
   .command('build <config> <source> <target>')
   .option('-i, --include <directory>', 'load additional includes from this directory')
+  .option('-m, --minify', 'minify the output')
   .description('build the views in source and write to target')
   .action(
     (config, source, target, options) => {
@@ -109,6 +111,8 @@ program
         .then(() => {
           console.log()
           console.log(colors.yellow('Building template files …'))
+          console.log(colors.yellow(' Settings:'))
+          console.log('  - Minify: ', options.minify ? colors.green('enabled') : colors.red('disabled'))
           console.log(colors.yellow(' data:'))
           _map(templatedata, (value, key) => {
             console.log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
@@ -126,6 +130,16 @@ program
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
                 data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgIncludes})
+                if (options.minify) {
+                  data = minify(data, {
+                    removeAttributeQuotes: true,
+                    decodeEntities: true,
+                    removeComments: true,
+                    removeEmptyAttributes: true,
+                    collapseWhitespace: true,
+                    collapseInlineTagWhitespace: true
+                  })
+                }
                 let trg = target + '/' + src.replace(source + '/', '')
                 console.log(src + ' -> ' + trg)
                 return fs.writeFileAsync(trg, data)
