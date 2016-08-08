@@ -10,6 +10,7 @@ const _map = require('lodash/map')
 const _forIn = require('lodash/forIn')
 const _template = require('lodash/template')
 const _merge = require('lodash/merge')
+const colors = require('colors')
 
 const program = require('commander')
 program
@@ -35,13 +36,6 @@ program
       let includes = {}
       let svgIncludes = {}
       let directives = {}
-
-      console.log()
-      console.log('Building template files …')
-      console.log(' data:')
-      _map(templatedata, (value, key) => {
-        console.log('  ' + key + ': ' + value)
-      })
 
       /**
        * This function can be called from a template to add additional static data
@@ -115,6 +109,21 @@ program
           ))
         )
         .then(() => {
+          console.log()
+          console.log(colors.yellow('Building template files …'))
+          console.log(colors.yellow(' data:'))
+          _map(templatedata, (value, key) => {
+            console.log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
+          })
+
+          console.log(colors.yellow('Includes:'))
+          _forIn(includes, (template, trg) => {
+            console.log('  -', colors.green('<%= includes[\'' + trg + '\'] %>'))
+          })
+          console.log(colors.yellow('SVGs:'))
+          _forIn(svgIncludes, (file, trg) => {
+            console.log('  -', colors.green('<%= svg[\'' + trg + '\'] %>'))
+          })
           return globAsync(source + '/*.html')
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
