@@ -137,6 +137,7 @@ program
                     removeComments: true,
                     removeEmptyAttributes: true,
                     collapseWhitespace: true,
+                    conservativeCollapse: true,
                     collapseInlineTagWhitespace: true
                   })
                 }
