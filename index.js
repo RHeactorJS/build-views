@@ -11,7 +11,7 @@ const _forIn = require('lodash/forIn')
 const _template = require('lodash/template')
 const _merge = require('lodash/merge')
 const colors = require('colors')
-const minify = require('html-minifier').minify;
+const minify = require('html-minifier').minify
 
 const program = require('commander')
 program
