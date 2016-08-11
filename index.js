@@ -30,6 +30,8 @@ program
         name: cfg.get('app'),
         description: cfg.get('description'),
         apiIndex: cfg.get('api_host') + '/api',
+        apiHost: cfg.get('api_host'),
+        webHost: cfg.get('web_host'),
         baseHref: cfg.get('base_href'),
         mimeType: cfg.get('mime_type'),
         environment: environment
