@@ -114,7 +114,7 @@ program
           console.log()
           console.log(colors.yellow('Building template files …'))
           console.log(colors.yellow(' Settings:'))
-          console.log('  - Minify: ', options.minify ? colors.green('enabled') : colors.red('disabled'))
+          console.log('  - ', options.minify ? colors.green('✓ minfication') : colors.red('✕ minfication'))
           console.log(colors.yellow(' data:'))
           _map(templatedata, (value, key) => {
             console.log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
