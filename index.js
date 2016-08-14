@@ -69,6 +69,7 @@ program
         .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
             return fs.readFileAsync(file, 'utf8').then(data => {
+              data = data.replace(/^<\?xml .+\?>/, '')
               let trg = file.match(/([^\/]+)\.svg$/)[1]
               svgIncludes[trg] = data
             })
