@@ -69,7 +69,12 @@ program
         .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
             return fs.readFileAsync(file, 'utf8').then(data => {
-              data = data.replace(/^<\?xml .+\?>/, '')
+              data = data.replace(/^<\?xml .+\?>/, '') // XML header
+              data = data.replace(/(\r\n|\n|\r)/g, '') // newlines
+              data = data.replace(/<[a-z-]+:[a-z-]+[^>]*>/gi, '') // XML namespaced tags
+              data = data.replace(/<\/[a-z-]+:[a-z-]+>/gi, '') // XML namespaced closing tags
+              data = data.replace(/[a-z-]+:[a-z-]+="[^"]*"/gi, '') // XML namespaced attributes
+              data = data.replace(/ id="[^"]+"/gi, ' ') // IDs
               let trg = file.match(/([^\/]+)\.svg$/)[1]
               svgIncludes[trg] = data
             })
