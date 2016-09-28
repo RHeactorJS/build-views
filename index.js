@@ -17,6 +17,7 @@ const program = require('commander')
 program
   .command('build <config> <source> <target>')
   .option('-i, --include <directory>', 'load additional includes from this directory')
+  .option('-s, --svg <directory>', 'load svg files from this directory')
   .option('-m, --minify', 'minify the output')
   .description('build the views in source and write to target')
   .action(
@@ -65,7 +66,11 @@ program
         scanForIncludes.push(globAsync(options.include + '/*.html'))
       }
 
-      return Promise.join(Promise.all(scanForIncludes), globAsync(source + '/js/directives/*.html'), globAsync(source + '/img/*.svg'))
+      return Promise.join(
+        Promise.all(scanForIncludes),
+        globAsync(source + '/js/directives/*.html'),
+        globAsync(options.svg ? options.svg + '/*.svg' : source + '/img/*.svg')
+      )
         .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
             return fs.readFileAsync(file, 'utf8').then(data => {
