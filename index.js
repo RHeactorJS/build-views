@@ -23,20 +23,13 @@ program
   .action(
     (config, source, target, options) => {
       let cfg = require(path.join(process.cwd(), config))
-      let environment = cfg.get('environment')
-      let templatedata = {
-        version: cfg.get('version'),
-        deployVersion: +new Date(),
-        appName: cfg.get('appName'),
-        name: cfg.get('app'),
-        description: cfg.get('description'),
-        apiIndex: cfg.get('api_host') + '/api',
-        apiHost: cfg.get('api_host'),
-        webHost: cfg.get('web_host'),
-        baseHref: cfg.get('base_href'),
-        mimeType: cfg.get('mime_type'),
-        environment: environment
+      if (!cfg.environment) {
+        throw new Error('You must return a value for environment')
       }
+      let environment = cfg.environment
+      let templatedata = _merge({}, cfg, {
+        buildTime: +new Date()
+      })
 
       let includes = {}
       let svgIncludes = {}
@@ -66,10 +59,12 @@ program
         scanForIncludes.push(globAsync(options.include + '/*.html'))
       }
 
+      console.log(options.svg)
+
       return Promise.join(
         Promise.all(scanForIncludes),
         globAsync(source + '/js/directives/*.html'),
-        globAsync(options.svg ? options.svg + '/*.svg' : source + '/img/*.svg')
+        globAsync(options.svg ? options.svg : source + '/img/*.svg')
       )
         .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
@@ -125,12 +120,11 @@ program
           console.log()
           console.log(colors.yellow('Building template files …'))
           console.log(colors.yellow(' Settings:'))
-          console.log('  - ', options.minify ? colors.green('✓ minfication') : colors.red('✕ minfication'))
+          console.log('  -', options.minify ? colors.green('✓ minfication') : colors.red('✕ minfication'))
           console.log(colors.yellow(' data:'))
           _map(templatedata, (value, key) => {
             console.log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
           })
-
           console.log(colors.yellow('Includes:'))
           _forIn(includes, (template, trg) => {
             console.log('  -', colors.green('<%= includes[\'' + trg + '\'] %>'))
