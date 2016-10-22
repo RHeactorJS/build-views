@@ -59,8 +59,6 @@ program
         scanForIncludes.push(globAsync(options.include + '/*.html'))
       }
 
-      console.log(options.svg)
-
       return Promise.join(
         Promise.all(scanForIncludes),
         globAsync(source + '/js/directives/*.html'),
