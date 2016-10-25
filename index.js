@@ -66,7 +66,7 @@ program
         Promise.all(scanForIncludes),
         globAsync(options.svg ? options.svg : sourceDir + '/img/*.svg')
       )
-        .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
+        .spread((includeTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
             return fs.readFileAsync(file, 'utf8').then(data => {
               data = data.replace(/^<\?xml .+\?>/, '') // XML header
@@ -104,15 +104,6 @@ program
                     includes[trg] = buildTemplate(template, {data: templatedata, includes: includes, include, svg: svgIncludes})
                   })
                 })
-            }),
-            Promise.map(directiveTemplates, (file) => {
-              return fs.readFileAsync(file, 'utf8').then((data) => {
-                let trg = file.replace(source + '/js/directives/', '')
-                trg = trg.replace(/\.html$/, '')
-                trg = trg.replace(/\//, '.')
-                data = _template(data)({data: templatedata})
-                directives[trg] = data
-              })
             })
           ))
         )
@@ -136,7 +127,7 @@ program
           return globAsync(sourceDir === source ? sourceDir + '/*.html' : source)
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
-                data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgIncludes})
+                data = _template(data)({data: templatedata, includes: includes, svg: svgIncludes})
                 if (options.minify) {
                   data = minify(data, {
                     removeAttributeQuotes: true,
