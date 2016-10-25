@@ -33,7 +33,10 @@ program
 
       let includes = {}
       let svgIncludes = {}
-      let directives = {}
+      source = path.resolve(source)
+      const sourceDir = fs.statSync(source).isFile() ? path.dirname(source) : source
+      target = path.resolve(target)
+      const targetDir = path.dirname(target)
 
       /**
        * This function can be called from a template to add additional static data
@@ -53,7 +56,7 @@ program
       // Build includes
       let globAsync = Promise.promisify(glob)
       let scanForIncludes = [
-        globAsync(source + '/includes/*.html')
+        globAsync(sourceDir + '/includes/*.html')
       ]
       if (options.include) {
         scanForIncludes.push(globAsync(options.include + '/*.html'))
@@ -61,8 +64,7 @@ program
 
       return Promise.join(
         Promise.all(scanForIncludes),
-        globAsync(source + '/js/directives/*.html'),
-        globAsync(options.svg ? options.svg : source + '/img/*.svg')
+        globAsync(options.svg ? options.svg : sourceDir + '/img/*.svg')
       )
         .spread((includeTemplates, directiveTemplates, svgFiles) => Promise
           .map(svgFiles, (file) => {
@@ -85,7 +87,7 @@ program
                   fileEnv = fileEnv[1]
                 }
                 return fs.readFileAsync(file, 'utf8').then((data) => {
-                  let trg = file.replace(source + '/includes/', '')
+                  let trg = file.replace(sourceDir + '/includes/', '')
                   if (options.include) {
                     trg = trg.replace(options.include, '')
                   }
@@ -131,7 +133,7 @@ program
           _forIn(svgIncludes, (file, trg) => {
             console.log('  -', colors.green('<%= svg[\'' + trg + '\'] %>'))
           })
-          return globAsync(source + '/*.html')
+          return globAsync(sourceDir === source ? sourceDir + '/*.html' : source)
             .map((src) => {
               return fs.readFileAsync(src, 'utf8').then((data) => {
                 data = _template(data)({data: templatedata, includes: includes, directives: directives, svg: svgIncludes})
@@ -146,7 +148,7 @@ program
                     collapseInlineTagWhitespace: true
                   })
                 }
-                let trg = target + '/' + src.replace(source + '/', '')
+                const trg = path.join(targetDir, path.basename(src))
                 console.log(src + ' -> ' + trg)
                 return fs.writeFileAsync(trg, data)
               })
