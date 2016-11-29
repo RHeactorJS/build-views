@@ -19,9 +19,11 @@ program
   .option('-i, --include <directory>', 'load additional includes from this directory')
   .option('-s, --svg <directory>', 'load svg files from this directory')
   .option('-m, --minify', 'minify the output')
+  .option('-d, --debug', 'output debug information')
   .description('build the views in source and write to target')
   .action(
     (config, source, target, options) => {
+      let log = options.debug ? console.log : () => {}
       let cfg = require(path.join(process.cwd(), config))
       if (!cfg.environment) {
         throw new Error('You must return a value for environment')
@@ -108,21 +110,21 @@ program
           ))
         )
         .then(() => {
-          console.log()
-          console.log(colors.yellow('Building template files …'))
-          console.log(colors.yellow(' Settings:'))
-          console.log('  -', options.minify ? colors.green('✓ minfication') : colors.red('✕ minfication'))
-          console.log(colors.yellow(' data:'))
+          log()
+          log(colors.yellow('Building template files …'))
+          log(colors.yellow(' Settings:'))
+          log('  -', options.minify ? colors.green('✓ minfication') : colors.red('✕ minfication'))
+          log(colors.yellow(' data:'))
           _map(templatedata, (value, key) => {
-            console.log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
+            log('  -', colors.green('<%= data[\'' + key + '\'] %>', colors.blue('// ' + value)))
           })
-          console.log(colors.yellow('Includes:'))
+          log(colors.yellow('Includes:'))
           _forIn(includes, (template, trg) => {
-            console.log('  -', colors.green('<%= includes[\'' + trg + '\'] %>'))
+            log('  -', colors.green('<%= includes[\'' + trg + '\'] %>'))
           })
-          console.log(colors.yellow('SVGs:'))
+          log(colors.yellow('SVGs:'))
           _forIn(svgIncludes, (file, trg) => {
-            console.log('  -', colors.green('<%= svg[\'' + trg + '\'] %>'))
+            log('  -', colors.green('<%= svg[\'' + trg + '\'] %>'))
           })
           return globAsync(sourceDir === source ? sourceDir + '/*.html' : source)
             .map((src) => {
@@ -140,7 +142,7 @@ program
                   })
                 }
                 const trg = path.join(targetDir, path.basename(src))
-                console.log(src + ' -> ' + trg)
+                log(src + ' -> ' + trg)
                 return fs.writeFileAsync(trg, data)
               })
             })
