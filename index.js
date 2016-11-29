@@ -75,14 +75,14 @@ program
               data = data.replace(/<\/[a-z-]+:[a-z-]+>/gi, '') // XML namespaced closing tags
               data = data.replace(/[a-z-]+:[a-z-]+="[^"]*"/gi, '') // XML namespaced attributes
               data = data.replace(/ id="[^"]+"/gi, ' ') // IDs
-              let trg = file.match(/([^\/]+)\.svg$/)[1]
+              let trg = file.match(/([^/]+)\.svg$/)[1]
               svgIncludes[trg] = data
             })
           })
           .then(() => Promise.join(
             Promise.map(includeTemplates, (includesFound) => {
               return Promise.map(includesFound, (file) => {
-                let fileEnv = file.match(/@([a-z]+)\.[^\.]+$/)
+                let fileEnv = file.match(/@([a-z]+)\.[^.]+$/)
                 if (fileEnv) {
                   fileEnv = fileEnv[1]
                 }
