@@ -1,7 +1,7 @@
 {
   "name": "rheactor-build-views",
   "description": "An utility to build HTML views",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "lint": "standard",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
@@ -30,9 +30,18 @@
     "lodash": "^4.17.2"
   },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-env": "^1.1.1",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-register": "^6.18.0",
     "husky": "<2.0.0",
     "standard": "^8.6.0",
     "validate-commit-msg": "^2.7.0",
     "semantic-release": "^6.3.4"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ]
 }
