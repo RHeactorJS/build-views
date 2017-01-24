@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-import Promise from 'bluebird';
+import Promise from 'bluebird'
 Promise.promisifyAll(require('fs'))
-import glob from 'glob';
-import path from 'path';
-import fs from 'fs';
-import _map from 'lodash/map';
-import _forIn from 'lodash/forIn';
-import _template from 'lodash/template';
-import _merge from 'lodash/merge';
-import colors from 'colors';
-import {minify} from 'html-minifier';
-import program from 'commander';
+import glob from 'glob'
+import path from 'path'
+import fs from 'fs'
+import _map from 'lodash/map'
+import _forIn from 'lodash/forIn'
+import _template from 'lodash/template'
+import _merge from 'lodash/merge'
+import colors from 'colors'
+import {minify} from 'html-minifier'
+import program from 'commander'
 program
   .command('build <config> <source> <target>')
   .option('-i, --include <directory>', 'load additional includes from this directory')
