@@ -9,7 +9,7 @@
     "commitmsg": "validate-commit-msg"
   },
   "bin": {
-    "rheactor-build-views": "./index.js"
+    "rheactor-build-views": "./dist/index.js"
   },
   "repository": {
     "type": "git",
