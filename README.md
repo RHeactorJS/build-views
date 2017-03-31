@@ -8,4 +8,12 @@
 
 [![NPM](https://nodei.co/npm/rheactor-build-views.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/rheactor-build-views/)
 
-An utility to build HTML views
+An utility to build static HTML views.
+
+Uses [lodash template](https://lodash.com/docs/4.17.2#template) to compile a base template into a static, deployable file. See [`ResourcefulHumans/www`](https://github.com/ResourcefulHumans/www/blob/master/Makefile) for a concrete usage example.
+
+## Features
+
+- It reads *includes* from a directory and injects their source into the output. This allows to separate the building blocks of a website into smaller files
+- It reads SVG files and injects them into the output.
+- It has the ability to add variable names to the output.
