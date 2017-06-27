@@ -9,7 +9,7 @@
     "commitmsg": "validate-commit-msg"
   },
   "bin": {
-    "build-views": "./dist/index.js"
+    "rheactorjs-build-views": "./dist/index.js"
   },
   "publishConfig": {
     "access": "public"
