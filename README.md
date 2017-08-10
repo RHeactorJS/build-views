@@ -1,5 +1,7 @@
 # build-views
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/RHeactorJS/build-views.svg)](https://greenkeeper.io/)
+
 [![npm version](https://img.shields.io/npm/v/@rheactorjs/build-views.svg)](https://www.npmjs.com/package/@rheactorjs/build-views)
 [![Build Status](https://travis-ci.org/RHeactorJS/build-views.svg?branch=master)](https://travis-ci.org/RHeactorJS/build-views)
 [![monitored by greenkeeper.io](https://img.shields.io/badge/greenkeeper.io-monitored-brightgreen.svg)](http://greenkeeper.io/) 
